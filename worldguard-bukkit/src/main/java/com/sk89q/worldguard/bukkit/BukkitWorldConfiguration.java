@@ -88,6 +88,10 @@ public class BukkitWorldConfiguration extends YamlWorldConfiguration {
         this.worldName = worldName;
         this.parentConfig = parentConfig;
 
+        if(worldName.contains("DXL")){
+            this.useRegions = false;
+        }
+
         plugin.createDefaultConfiguration(configFile, "config_world.yml");
         plugin.createDefaultConfiguration(blacklistFile, "blacklist.txt");
 
@@ -445,4 +449,7 @@ public class BukkitWorldConfiguration extends YamlWorldConfiguration {
         return chestProtection;
     }
 
+    public String getWorldName() {
+        return worldName;
+    }
 }
