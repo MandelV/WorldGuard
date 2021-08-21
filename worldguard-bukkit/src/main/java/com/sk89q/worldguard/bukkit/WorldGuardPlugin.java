@@ -87,12 +87,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.FileUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -266,8 +270,34 @@ public class WorldGuardPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        this.getLogger().warning("[worldguard-DXL] remove all world");
+        this.getConfigManager().getWorldConfigs().forEach(world -> {
+            if (world.getWorldName().contains("DXL")){
+                try {
+                    this.getLogger().warning("[worldguard-DXL] remove world : " + world.getWorldName());
+                    Path directory = Paths.get(this.getDataFolder() + "/worlds/" + world.getWorldName());
+                    Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            Files.delete(file);
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                            Files.delete(dir);
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         WorldGuard.getInstance().disable();
         this.getServer().getScheduler().cancelTasks(this);
+
+
     }
 
     @Override
