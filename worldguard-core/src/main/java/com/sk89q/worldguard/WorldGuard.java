@@ -182,9 +182,9 @@ public final class WorldGuard {
      */
     public void disable() {
         executorService.shutdown();
-
         try {
             logger.log(Level.INFO, "Shutting down executor and cancelling any pending tasks...");
+
 
             List<Task<?>> tasks = supervisor.getTasks();
             if (!tasks.isEmpty()) {
